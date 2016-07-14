@@ -1,0 +1,20 @@
+
+Microsoft Visual Studio Solution File, Format Version 11.00
+# Atmel Studio Solution File, Format Version 11.00
+Project("{C8EE3D1E-8981-410A-8BB2-61D445ABD1CB}") = "TimeSyncMbed", "TimeSyncMbed_6_2.cppproj", "{57C2EF95-186D-40CD-8ED8-82E39DCE0001}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|ARM = Debug|ARM
+		Release|ARM = Release|ARM
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{57C2EF95-186D-40CD-8ED8-82E39DCE0001}.Debug|ARM.ActiveCfg = Debug|ARM
+		{57C2EF95-186D-40CD-8ED8-82E39DCE0001}.Debug|ARM.Build.0 = Debug|ARM
+		{57C2EF95-186D-40CD-8ED8-82E39DCE0001}.Release|ARM.ActiveCfg = Release|ARM
+		{57C2EF95-186D-40CD-8ED8-82E39DCE0001}.Release|ARM.Build.0 = Release|ARM
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
