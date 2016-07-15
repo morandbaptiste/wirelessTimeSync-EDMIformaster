@@ -1,0 +1,51 @@
+<?-- http://olado.github.io/doT/ -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Historical Data</title>
+</head>
+<body>
+{{=it.live}}
+<table>
+  <tr>
+    <th></th>
+    <th>Voltage (V)</th>
+    <th></th>
+    <th></th>
+    <th>Current (A)</th>
+    <th></th>
+    <th></th>
+    <th>Angle (Degrees)</th>
+    <th></th>
+    <th>Frequency (Hz)</th>
+  </tr>
+  <tr>
+    <th>Phase A</th>
+    <th>Phase B</th>
+    <th>Phase C</th>
+    <th>Phase A</th>
+    <th>Phase B</th>
+    <th>Phase C</th>
+    <th>Phase A</th>
+    <th>Phase B</th>
+    <th>Phase C</th>
+    <th></th>
+  </tr>
+  {{ for(var c in it.data) { }}
+  <tr>
+    {{ for(var i in it.data[c].voltage) { }}
+    <td>{{=it.data[c].voltage[i]}}</th>
+    {{ } }}
+    {{ for(var i in it.data[c].current) { }}
+    <td>{{=it.data[c].current[i]}}</th>
+    {{ } }}
+    {{ for(var i in it.data[c].angle) { }}
+    <td>{{=it.data[c].angle[i]}}</th>
+    {{ } }}
+    <td>{{=it.data[c].frequency}}</td>
+  </tr>
+  {{ } }}
+</table>
+
+</body>
+</html>

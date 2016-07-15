@@ -1,0 +1,6 @@
+{
+  "port"     : "com4",
+  "baud"     : 9600,
+  "dataroot" : "../data",
+  "tick"     : 4000
+}

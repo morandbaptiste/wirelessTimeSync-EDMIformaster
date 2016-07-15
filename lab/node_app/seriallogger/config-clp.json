@@ -1,0 +1,14 @@
+{
+  "start"    : 2,
+  "end"      : 3,
+  "commands" : { "E" : { "name" : "extended"    } ,
+                 "R" : { "name" : "read"        } ,
+                 "W" : { "name" : "write"       } ,
+                 "L" : { "name" : "logon"       } ,
+                 "K" : { "name" : "securelogon" } ,
+                 "X" : { "name" : "logoff"      } ,
+                 "F" : { "name" : "fileaccess"  } ,
+                 "T" : { "name" : "timesync"    } ,
+                 "V" : { "name" : "event"       } }
+               
+}

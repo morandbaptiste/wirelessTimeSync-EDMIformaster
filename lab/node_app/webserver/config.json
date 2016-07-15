@@ -1,0 +1,8 @@
+{
+  "static"   : "resources",
+  "root"     : "localhost",
+  "port"     : 8081,
+  "dataroot" : "../data",
+  "livedata" : "live.csv",
+  "histdata" : "09.06.2016.csv"
+}

@@ -1,0 +1,94 @@
+<!-- http://olado.github.io/doT/ -->
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Live Data</title>
+	<script src="jquery.min.js"></script>
+	<script>
+	var time = "";
+	var tick = undefined;
+
+	function update()
+	{
+		$.ajax({
+			url: 'live/json',
+			error: function(jqXHR, textStatus, errorThrown) {
+				alert("ERROR: NO FILE, " + textStatus + ", " + errorThrown)
+			},
+			dataType: 'json',
+			success: function(data) {
+
+
+				if(data.live && (data.time!=time))
+				{
+					time = data.time;
+						
+					for(var i=0; i<data.voltage.length; i++) {
+						$('#voltage' + i).html(data.voltage[i]);
+					};
+					
+					for(var i=0; i<data.current.length; i++) {
+						$('#current' + i).html(data.current[i]);
+					};
+					
+					for(var i=0; i<data.angle.length; i++) {
+						$('#angle' + i).html(data.angle[i]);
+					};
+					
+					$('#frequency').html(data.frequency);
+				}
+
+			},
+			type: 'GET'
+		});
+
+	}
+
+	tick = window.setInterval(update,10000);
+
+	function clickupdate(e)
+	{
+
+		e.preventDefault();
+		console.log("BUTTON UPDATE CLICKED");
+		var rate = parseInt($('#updaterate').val());
+		console.log(rate);
+		if(!isNaN(rate))
+		{
+			window.clearInterval(tick);
+			tick = window.setInterval(update,rate*1000);
+		}
+
+	}
+
+</script>
+</head>
+<body>
+<table>
+  <tr>
+    <th id="voltagelabel" >Voltage (V)</th>
+    {{ for(var i in it.voltage) { }}
+    <td id="voltage{{=i}}" >{{=it.voltage[i]}}</th>
+    {{ } }}
+  </tr>
+  <tr>
+    <th id="currentlabel" >Current (A)</th>
+    {{ for(var i in it.current) { }}
+    <td id="current{{=i}}" >{{=it.current[i]}}</th>
+    {{ } }}
+  </tr>
+  <tr>
+    <th id="#anglelabel" >Angle (Degrees)</th>
+    {{ for(var i in it.angle) { }}
+    <td id="angle{{=i}}" >{{=it.angle[i]}}</th>
+    {{ } }}
+  </tr>
+  <tr>
+   <th>Frequency (Hz)</th>
+    <td id="frequency" >{{=it.frequency}}</td>
+  </tr>
+</table>
+<input id="updaterate" type="text" placeholder="update rate (sec)" ></input>
+<input id="buttonupdate" type="button" value="Update" onclick="clickupdate(event)" ></input>
+</body>
+</html>

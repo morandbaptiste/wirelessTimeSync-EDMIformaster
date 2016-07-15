@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title> AJAX Server Test </title>
+    <script src="base64.js" ></script>
+    <script>
+      function send()
+      {
+        var xmlhttp = new XMLHttpRequest();
+        var method = document.getElementById("method").value;
+        var query = document.getElementById("query").value;
+        var fields = document.getElementById("fields").value;
+
+        method = method.toUpperCase();
+        fields = fields.split(/\r\n|\r|\n/g);
+
+        xmlhttp.onreadystatechange=function()
+        {
+          if(xmlhttp.readyState==4 && xmlhttp.status==200)
+          {
+            var resphead = xmlhttp.getAllResponseHeaders();
+            resphead = resphead.split(/\r\n|\r|\n/g);
+
+            for(var i=0;i<resphead.length;++i)
+            {
+              var field = resphead[i].split(":");
+
+              if((field[0] != "") && (field[1] != ""))
+              {
+                var key = field[0].toLowerCase();
+                var val = field[1].trim().toLowerCase();
+
+                if(key == "content-type")
+                {
+                  var contentfull = val.split(";");
+                  var mime = contentfull[0].split("/");
+
+                  if(mime[0] == "image")
+                  {
+                    var img = document.getElementById('image');
+
+                    if(!img)
+                    {
+                      img = document.createElement('img');
+                      document.body.appendChild(img);
+                    }
+
+                    img.id = "image";
+                    var src = "data:" + contentfull[0] + ";base64," + btoa(unescape(encodeURIComponent(xmlhttp.responseText)));
+                    img.src = src;
+                    var old = document.getElementById('image');
+                  }
+                }
+              }
+            }
+
+            document.getElementById("result").innerHTML=xmlhttp.responseText;
+          }
+        }
+
+        if(method == "POST")
+        {
+          var split = query.split("?");
+          var path = split[0];
+          query = split[1];
+
+          xmlhttp.open(method,path,true);
+        }
+        else
+        {
+          xmlhttp.open(method,query,true);
+          query = undefined;
+        }
+
+        for(var i=0;i<fields.length;++i)
+        {
+          if(fields[i].length > 1)
+          {
+            var field = fields[i].split(":");
+
+            if((field[0] != "") && (field[1] != ""))
+            {
+              var val = field[1].trim();
+              xmlhttp.setRequestHeader(field[0],val);
+            }
+          }
+        }
+
+        xmlhttp.send(query);
+      }
+    </script>
+  </head>
+  <body>
+    <div>
+      <input id="method" > </input>
+      <br />
+      <textarea id="fields" ></textarea>
+      <br />
+      <input id="query" > </input>
+      <br />
+      <button type="button" onclick="send()" > Send </button>
+    </div>
+    <br />
+    <div id="result" > </div>
+  </body>
+</html>

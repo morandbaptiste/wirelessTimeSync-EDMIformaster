@@ -1,0 +1,412 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Line Chart</title>
+    <script src="Chart.bundle.min.js"></script>
+    <script src="jquery.min.js"></script>
+    <style>
+    canvas{
+        -moz-user-select: none;
+        -webkit-user-select: none;
+        -ms-user-select: none;
+    }
+    </style>
+</head>
+
+<body>
+    <div style="width:75%;">
+        <canvas id="canvas"></canvas>
+    </div>
+    <br>
+    <br>
+    <button id="randomizeData">Randomize Data</button>
+    <button id="changeDataObject">Change Data Object</button>
+    <button id="addDataset">Add Dataset</button>
+    <button id="removeDataset">Remove Dataset</button>
+    <button id="addData">Add Data</button>
+    <button id="removeData">Remove Data</button>
+    <select id="dataType">
+      <option value="1">Voltage</option>
+      <option value="2">Current</option>
+    </select>
+    <input type="checkbox" id="live" value="live" >Live</input>
+    <button id="update">Update</button>
+    <input type="number" name="range-min" id="range-min" value="">
+    <input type="number" name="range-max" id="range-max" value="">
+    <script>
+	var time = 0;
+
+	function updateVoltage()
+        {
+
+            $.ajax({
+               url: 'live/json',
+               error: function(jqXHR, textStatus, errorThrown) {
+                 alert("ERROR: NO FILE, " + textStatus + ", " + errorThrown)
+               },
+               dataType: 'json',
+               success: function(data) {
+//alert("FILE FOUND: " + data.data.frequency)
+
+                 if (config.data.datasets.length > 0) {
+
+                     if(data.live && (data.time!=time))
+                     {
+		       time = data.time;
+
+		       config.data.labels.splice(0, 1);
+                       config.data.labels.push(data.time);
+
+                       var count = 0;
+                       $.each(config.data.datasets, function(i, dataset) {
+			 dataset.data.splice(0, 1);
+                         dataset.data.push(data.voltage[count]);
+
+                         ++count;
+                       });
+
+                       window.myLine.update();
+                     }
+
+//                   var values = data.split(",");
+//                   var time = values[0];
+//		      config.data.labels.splice(0, 1);
+//                   config.data.labels.push(time);
+
+//                   var count = 1;
+//                   $.each(config.data.datasets, function(i, dataset) {
+//			 dataset.data.splice(0, 1);
+//                      dataset.data.push(values[count]);
+
+//                      ++count;
+//                   });
+
+//                   window.myLine.update();
+		    }
+               },
+               type: 'GET'
+            });
+        }
+
+        var tick = null;//window.setInterval(updateVoltage, 3000);
+
+        var MONTHS = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+        
+        var randomScalingFactor = function() {
+            return Math.round(Math.random() * 100);
+            //return 0;
+        };
+        var randomColorFactor = function() {
+            return Math.round(Math.random() * 255);
+        };
+        var randomColor = function(opacity) {
+            return 'rgba(' + randomColorFactor() + ',' + randomColorFactor() + ',' + randomColorFactor() + ',' + (opacity || '.3') + ')';
+        };
+        var config = {
+            type: 'line',
+            data: {
+                labels: ["January", "February", "March", "April", "May", "June", "July"],
+                datasets: [{
+                    label: "My First dataset",
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                    fill: false,
+                    borderDash: [5, 5],
+                }, {
+                    hidden: true,
+                    label: 'hidden dataset',
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                }, {
+                    label: "My Second dataset",
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                }]
+            },
+            options: {
+                responsive: true,
+                title:{
+                    display:false,
+                    text:'Chart.js Line Chart'
+                },
+                tooltips: {
+                    mode: 'label',
+                    callbacks: {
+                        // beforeTitle: function() {
+                        //     return '...beforeTitle';
+                        // },
+                        // afterTitle: function() {
+                        //     return '...afterTitle';
+                        // },
+                        // beforeBody: function() {
+                        //     return '...beforeBody';
+                        // },
+                        // afterBody: function() {
+                        //     return '...afterBody';
+                        // },
+                        // beforeFooter: function() {
+                        //     return '...beforeFooter';
+                        // },
+                        // footer: function() {
+                        //     return 'Footer';
+                        // },
+                        // afterFooter: function() {
+                        //     return '...afterFooter';
+                        // },
+                    }
+                },
+                hover: {
+                    mode: 'dataset'
+                },
+                scales: {
+                    xAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Time'
+                        }
+                    }],
+                    yAxes: [{
+                        display: true,
+                        scaleLabel: {
+                            display: true,
+                            labelString: 'Value'
+                        },
+                        ticks: {
+                            suggestedMin: 0,
+                            suggestedMax: 100,
+                        }
+                    }]
+                }
+            }
+        };
+        $.each(config.data.datasets, function(i, dataset) {
+            dataset.borderColor = randomColor(0.4);
+            dataset.backgroundColor = randomColor(0.5);
+            dataset.pointBorderColor = randomColor(0.7);
+            dataset.pointBackgroundColor = randomColor(0.5);
+            dataset.pointBorderWidth = 1;
+        });
+        window.onload = function() {
+            var ctx = document.getElementById("canvas").getContext("2d");
+            window.myLine = new Chart(ctx, config);
+        };
+        $('#randomizeData').click(function() {
+            $.each(config.data.datasets, function(i, dataset) {
+                dataset.data = dataset.data.map(function() {
+                    return randomScalingFactor();
+                });
+            });
+            window.myLine.update();
+        });
+        $('#changeDataObject').click(function() {
+            config.data = {
+                labels: ["July", "August", "September", "October", "November", "December"],
+                datasets: [{
+                    label: "My First dataset",
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                    fill: false,
+                }, {
+                    label: "My Second dataset",
+                    fill: false,
+                    data: [randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor(), randomScalingFactor()],
+                }]
+            };
+            $.each(config.data.datasets, function(i, dataset) {
+                dataset.borderColor = randomColor(0.4);
+                dataset.backgroundColor = randomColor(0.5);
+                dataset.pointBorderColor = randomColor(0.7);
+                dataset.pointBackgroundColor = randomColor(0.5);
+                dataset.pointBorderWidth = 1;
+            });
+            // Update the chart
+            window.myLine.update();
+        });
+        $('#addDataset').click(function() {
+            var newDataset = {
+                label: 'Dataset ' + config.data.datasets.length,
+                borderColor: randomColor(0.4),
+                backgroundColor: randomColor(0.5),
+                pointBorderColor: randomColor(0.7),
+                pointBackgroundColor: randomColor(0.5),
+                pointBorderWidth: 1,
+                data: [],
+            };
+            for (var index = 0; index < config.data.labels.length; ++index) {
+                newDataset.data.push(randomScalingFactor());
+            }
+            config.data.datasets.push(newDataset);
+            window.myLine.update();
+        });
+        $('#addData').click(function() {
+            if (config.data.datasets.length > 0) {
+                var month = MONTHS[config.data.labels.length % MONTHS.length];
+                config.data.labels.push(month);
+                $.each(config.data.datasets, function(i, dataset) {
+                    dataset.data.push(randomScalingFactor());
+                });
+                window.myLine.update();
+            }
+        });
+        $('#removeDataset').click(function() {
+            config.data.datasets.splice(0, 1);
+            window.myLine.update();
+        });
+        $('#removeData').click(function() {
+            config.data.labels.splice(-1, 1); // remove the label first
+            config.data.datasets.forEach(function(dataset, datasetIndex) {
+                dataset.data.pop();
+            });
+            window.myLine.update();
+        });
+        $('#update').click(function() {
+            clearInterval(tick);
+
+            var live = $('#live').is(":checked")
+            var type = $('#dataType').val();
+alert("UPDATE: " + live + ", " + type);
+
+        // Voltage selected
+        if(type == 1){
+ 		     config.options.title.text = "Voltage";
+		     config.options.title.display = "true";
+		     
+		     config.options.scales.yAxes[0].ticks.suggestedMin = 217;
+                     config.options.scales.yAxes[0].ticks.suggestedMax = 219;
+                     config.options.scales.yAxes[0].scaleLabel.labelString = 'Voltage';
+
+		     var size = config.data.labels.length;
+		     config.data.labels = [];
+		     for (var i = 0; i < size; ++i)
+		     {
+		       config.data.labels.push("");
+		     }
+		     
+		     config.data.datasets = [];
+		     for (var i = 0; i < 3; ++i)
+		     {
+                     var newDataset = {
+                       data: [],
+		       };
+                     for (var index = 0; index < config.data.labels.length; ++index) {
+                       newDataset.data.push(0.0);
+                     }
+                     config.data.datasets.push(newDataset);
+		     }
+		     
+                   var count = 1;
+		   
+                   $.each(config.data.datasets, function(i, dataset) {
+                      dataset.label = "Phase";
+                      if(count == 1)
+                      {
+                        dataset.label += "A";
+                        dataset.borderColor = 'rgba(' + 255 + ',' + 0 + ',' + 0 + ',' + 1.0 + ')';
+                        dataset.backgroundColor = 'rgba(' + 255 + ',' + 0 + ',' + 0 + ',' + 1.0 + ')';
+                        dataset.pointBorderColor = 'rgba(' + 255 + ',' + 0 + ',' + 0 + ',' + 1.0 + ')';
+                        dataset.pointBackgroundColor = 'rgba(' + 255 + ',' + 0 + ',' + 0 + ',' + 1.0 + ')';
+                      }
+                      else if(count == 2)
+                      {
+                        dataset.label += "B";
+			    dataset.borderColor = 'rgba(' + 0 + ',' + 255 + ',' + 0 + ',' + 1.0 + ')';
+                        dataset.backgroundColor = 'rgba(' + 0 + ',' + 255 + ',' + 0 + ',' + 1.0 + ')';
+                        dataset.pointBorderColor = 'rgba(' + 0 + ',' + 255 + ',' + 0 + ',' + 1.0 + ')';
+                        dataset.pointBackgroundColor = 'rgba(' + 0 + ',' + 255 + ',' + 0 + ',' + 1.0 + ')';
+                      }
+                      else if(count == 3)
+                      {
+                        dataset.label += "C";
+		dataset.borderColor = 'rgba(' + 0 + ',' + 0 + ',' + 255 + ',' + 1.0 + ')';
+                        dataset.backgroundColor = 'rgba(' + 0 + ',' + 0 + ',' + 255 + ',' + 1.0 + ')';
+                        dataset.pointBorderColor = 'rgba(' + 0 + ',' + 0 + ',' + 255 + ',' + 1.0 + ')';
+                        dataset.pointBackgroundColor = 'rgba(' + 0 + ',' + 0 + ',' + 255 + ',' + 1.0 + ')';
+                      }
+
+                      ++count;
+
+                      dataset.pointBorderWidth = 1;
+                      dataset.fill = false;
+                      dataset.borderDash = [0, 0];
+                      dataset.hidden = false;
+		      dataset.lineTension = 0;
+                   });
+
+              config.options.animation = false;
+	      
+	config.options.scaleOverride = true;
+	config.options.scaleSteps = 5;
+	config.options.scaleStepWidth = 20;
+	config.options.scaleStartValue = 10 ;
+	      
+	$('#range-min').val(config.options.scales.yAxes[0].ticks.suggestedMin);
+	$('#range-max').val(config.options.scales.yAxes[0].ticks.suggestedMax);
+	
+              tick = window.setInterval(updateVoltage, 10000);
+           }
+        window.myLine.update();
+        });
+	
+	var onrangeminchange = function (e) {
+		e.preventDefault();
+		if (! config.options.scales.yAxes[0].ticks.suggestedMin || 
+			config.options.scales.yAxes[0].ticks.suggestedMin != $(this).val()
+		)
+		{      
+			if($(this).val() < config.options.scales.yAxes[0].ticks.suggestedMax ||
+				!config.options.scales.yAxes[0].ticks.suggestedMax
+			)
+			{
+				alert("min changed");
+				config.options.scales.yAxes[0].ticks.suggestedMin = $(this).val();
+			}
+			else
+			{
+				$(this).val(config.options.scales.yAxes[0].ticks.suggestedMax-1)
+			}
+		}
+	}
+	
+	var onrangeminkeyup = function (e) {
+		if ( e.which && e.which == 13 ) {
+			onrangeminchange(e);
+		}
+	}
+	
+	var onrangemaxchange =  function (e) {
+		e.preventDefault();
+		if (! config.options.scales.yAxes[0].ticks.suggestedMax || 
+			config.options.scales.yAxes[0].ticks.suggestedMax != $(this).val()
+			)
+		{       
+			alert("max val");
+			if($(this).val() > config.options.scales.yAxes[0].ticks.suggestedMin ||
+				!config.options.scales.yAxes[0].ticks.suggestedMin
+			)
+			{
+				config.options.scales.yAxes[0].ticks.suggestedMax = $(this).val();
+				alert("max changed");
+			}
+			else
+			{
+				$(this).val(config.options.scales.yAxes[0].ticks.suggestedMin+1);
+			}
+		}
+	}
+	
+	var onrangemaxkeyup = function (e) {
+		if(e.which && e.which == 13)
+		{
+			onrangemaxchange(e);
+		}
+	}
+	
+	$('#range-min').click(onrangeminchange);
+	$('#range-min').keyup(onrangeminkeyup);
+	$('#range-min').val(config.options.scales.yAxes[0].ticks.suggestedMin);
+	
+	$('#range-max').click(onrangemaxchange);
+	$('#range-max').keyup(onrangemaxkeyup);
+	$('#range-max').val(config.options.scales.yAxes[0].ticks.suggestedMax);
+    </script>
+</body>
+
+</html>
