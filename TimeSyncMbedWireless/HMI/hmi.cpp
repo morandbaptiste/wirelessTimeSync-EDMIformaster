@@ -9,11 +9,11 @@
 /* GLOBAL                                                               */
 /************************************************************************/
 xQueueHandle uartQueue;
-//#ifdef MASTERMODE
-//	Serial hmi(PA22,PA23);
-//#else
+#ifdef MASTERMODE
+	Serial hmi(PA22,PA23);
+#else
 	Serial hmi(USBTX,USBRX);
-//#endif
+#endif
 /************************************************************************/
 /* FUNCTION                                                             */
 /************************************************************************/
