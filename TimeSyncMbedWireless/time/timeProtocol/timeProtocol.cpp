@@ -74,14 +74,12 @@ void correction(void){
 
 	if(xTaskGetTickCount()-saveCorrection>(TIME_CORRECTION/portTICK_RATE_MS)){
 			
-			if(timeProt.correction.nbCorrection>2){
+			if(timeProt.correction.nbCorrection>1){
 				saveCorrection=xTaskGetTickCount();
 				if(!hardwareCorrection()){
 					sofwareCorrection();
 				}
 			}
-			
-		
 	}
 	
 }
@@ -432,12 +430,13 @@ void sender(void){
 
 }
 void printfClock(Clock clock){
-			if(clock.sign==true){
+	/*		if(clock.sign==true){
 				pc.printf("%lu s,%u\r\n",clock.second,(unsigned int)clock.halfmillis);
 			}
 			else{
 				pc.printf("-%lu s,%u\r\n",clock.second,(unsigned int)clock.halfmillis);
 			}
+	*/
 }
 void updateClock(void){
 		Clock diff;

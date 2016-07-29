@@ -11,7 +11,6 @@ char messageHMIError[100];
 /** Callback function for the EXTINT driver, called when an external interrupt
  *  detection occurs.
  */
-
 void ppsISR(void)
 {	
 	wdt_clear();
@@ -20,6 +19,7 @@ void ppsISR(void)
 	//Disable_global_interrupt();
 	Clock timeMaster={0,0,true};
 	readClock(&timeCopy);
+	
 	//Enable_global_interrupt();
 	timeMaster.second=timeCopy.second;
 	timeMaster.halfmillis=timeCopy.halfmillis;
@@ -27,29 +27,31 @@ void ppsISR(void)
 		timeMaster.second++;
 	}
 	timeMaster.halfmillis=0;
-	/*if((timeMaster.halfmillis>RTC_FREQ)||(timeMaster.halfmillis<0)){
-			printf("timeMasterpps");
-			printfClock(timeMaster);
-	}
-	if((timeCopy.halfmillis>RTC_FREQ)||(timeCopy.halfmillis<0)){
-		printf("timeCopypps:'");
-		printfClock(timeCopy);
-	}
-	*/
+	
 	timeProt.offset=subClock(timeMaster,timeCopy);
 	//timeProt.offset.second=0;
+	//report(timeProt.offset,1);
 	#ifdef MASTERMODE
 		updateClock();
 	#else
-		if(timeProt.offset.sign==true){
+		unsigned long int offset=(timeProt.offset.second*32000)+timeProt.offset.halfmillis;
+	/*	if(timeProt.offset.sign==true){
 			sprintf(messageHMIError,"		error pps: %lus %u	t:%lus",timeProt.offset.second,(unsigned int)(timeProt.offset.halfmillis/2),timeMaster.second);
 		}
 		else{
 			sprintf(messageHMIError,"		error pps: -%lus %u	t:%lus",timeProt.offset.second,(unsigned int)(timeProt.offset.halfmillis/2),timeMaster.second);
+		}*/
+		if(timeProt.offset.sign==true){
+			sprintf(messageHMIError,"		%lu",offset);
+		}
+		else{
+			sprintf(messageHMIError,"		-%lu",offset);
 		}
 		sendHMI(messageHMIError);
 	#endif
 		Enable_global_interrupt();
+		
+
 }
 
 void configurationPPS(void){
@@ -66,8 +68,6 @@ void configurationPPS(void){
 		extint_chan_set_config(8, &eint_chan_conf);
 		//configuration callback
 		extint_register_callback(&ppsISR,8,EXTINT_CALLBACK_TYPE_DETECT);
-		//InterruptManager::get()->add_handler(ppsISR, EIC_IRQn);
-		//ppsIsrr.attach(&ppsISR);
 		//activation callback
 		extint_chan_enable_callback(8,EXTINT_CALLBACK_TYPE_DETECT);		
 		

@@ -7,7 +7,7 @@
 #include "uartGPS.h"
 void gpsUartTask(void){
 		while(1){
-			sendHMI("gps Uart task.");
+			//sendHMI("gps Uart task.");
 			vTaskDelay(100000/portTICK_RATE_MS);
 		}
 }

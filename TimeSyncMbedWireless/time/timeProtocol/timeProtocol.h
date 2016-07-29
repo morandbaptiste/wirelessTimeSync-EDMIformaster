@@ -121,6 +121,8 @@ extern Clock sumOffset;
 /************************************************************************/
 /* FUNCTION                                                             */
 /************************************************************************/
+
+void report(Clock offset,int type);
 /** 
 @brief gove the pgcd value
 @return the pgcd value

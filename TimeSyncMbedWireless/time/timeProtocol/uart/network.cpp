@@ -23,7 +23,8 @@ void ISRNetworkReception(uint8_t e){
 	{
 		
 		#ifdef RADIO
-		 while(radio.available()){
+		uint8_t available=radio.available();
+		 for(uint8_t i=0;i<available;i++){
 
 			//Disable_global_interrupt();
 			//pc.printf("mimi\r\n");

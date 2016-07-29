@@ -29,7 +29,7 @@ void wdt_config(void){
 	/* Initialize and enable the Watchdog with the user settings */
 	//! [setup_4]
 	
-	wdt_set_config(&config_wdt);
+	//wdt_set_config(&config_wdt);
 	
 	//! [setup_4]	
 	//hmi.printf("config wdt\r\n");
