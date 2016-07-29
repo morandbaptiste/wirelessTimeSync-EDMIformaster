@@ -1,0 +1,296 @@
+<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+<diagram program="umlet" version="14.2">
+  <help_text>// Uncomment the following line to change the fontsize and font:
+ fontsize=14
+ fontfamily=SansSerif //possible: SansSerif,Serif,Monospaced
+
+</help_text>
+  <zoom_level>7</zoom_level>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>707</x>
+      <y>1134</y>
+      <w>221</w>
+      <h>259</h>
+    </coordinates>
+    <panel_attributes>title:Correct Offset
+Start
+Calculate Timesample since last correction 
+Add Offset to sumOffset
+Add Timesample to sumTime
+nb sample ++
+readClock
+Correct Clock (local+Offset)
+End
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>28</x>
+      <y>1827</y>
+      <w>427</w>
+      <h>425</h>
+    </coordinates>
+    <panel_attributes>title:task HMI
+Start
+Config / init variable
+While
+	If
+		[queue empty]
+				
+		[queue  not empty]
+		While[queue not empty]
+			Display information	
+	EndIf
+	Block task for 500ms
+	
+		
+	
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>0</x>
+      <y>21</y>
+      <w>154</w>
+      <h>245</h>
+    </coordinates>
+    <panel_attributes>title:Main
+configureHmi
+configureInternalClock
+ConfigurePPs
+ConfiogureNetwork
+createTask (kernelConfig) ..
+Start scheduler 
+End
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>175</x>
+      <y>35</y>
+      <w>137</w>
+      <h>163</h>
+    </coordinates>
+    <panel_attributes>title:kernelConfig
+Start
+create task HMI ..
+create task TimeSync ..
+End
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>154</x>
+      <y>861</y>
+      <w>456</w>
+      <h>431</h>
+    </coordinates>
+    <panel_attributes>title:Correction
+Start
+If
+	[wait&gt;timeCorretion]
+	HardwareCorrection
+	Calcul Offset /s 
+	Calcul thershold with average
+	If 
+		[Threshold change]
+	
+		[Threshold not change]
+		Soft Corr calcul Offsset to add by treshold
+	EndIf
+	
+	[[wait&gt;timeCorretion]
+	
+
+End
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>357</x>
+      <y>0</y>
+      <w>189</w>
+      <h>295</h>
+    </coordinates>
+    <panel_attributes>title:task TimeSync
+Start
+Config / Init var
+While
+	sender ..
+	receiver ..
+	Correction ..
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>504</x>
+      <y>1904</y>
+      <w>400</w>
+      <h>632</h>
+    </coordinates>
+    <panel_attributes>title:ISR Timer
+Start
+	increase timestamp
+	If
+		[need blink LED]
+		change state LED
+		
+		[need not blink]
+	EndIf
+	If 
+		[Correction Software]
+		If
+			[need Correction]
+			correct timeStamp
+			add correction value to sumOffset
+			
+			[no need Correction]
+
+		EndIf
+
+		[No Correction]
+
+	EndIf
+End
+
+
+	
+		
+	
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>14</x>
+      <y>2275</y>
+      <w>246</w>
+      <h>328</h>
+    </coordinates>
+    <panel_attributes>title:ISR PPS
+Start
+read Local Clock 
+guess Real Clock 
+Calculate Offset
+If 
+	[mater Node]
+	Correct Offset ..
+	
+	[Slave node]
+	sendHMI Offset	
+EndIf
+End
+
+
+	
+		
+	
+
+
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>28</x>
+      <y>1316</y>
+      <w>533</w>
+      <h>476</h>
+    </coordinates>
+    <panel_attributes>title:Receiver
+Start
+waitToken free (timeout 500)
+If
+	[tokenReceive free]
+	readCircular buffer
+	If
+		[sync recu]
+		read Value receive
+		Calculate clock with delay
+		Correct offset ..
+		
+		[delay request]
+		Clear the demand if CRC NOK
+		
+		[delayResponse]
+		read Value
+		update delay
+		correct offset ..
+	EndIf
+		
+	[Token not free]
+	
+EndIf
+
+
+End
+
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+  <element>
+    <type>com.baselet.element.old.allinone.ActivityDiagramText</type>
+    <coordinates>
+      <x>203</x>
+      <y>357</y>
+      <w>683</w>
+      <h>486</h>
+    </coordinates>
+    <panel_attributes>title:Sender
+Start
+If
+	[master]
+	If
+		[wait &gt;TimeSyncCommand ]
+		send SyncCommand
+		
+		[wait &lt; TimeSyncCommand]
+	EndIf
+	If 
+		[delay request receive]
+		send delayresponse
+		
+		[no delay request receive]
+	EndIf
+	
+	[slave]
+	If
+		[wait &gt;TimeOffsetCommand ]
+		send delayRequest
+		
+		[wait &lt; TimeOffsetCommand]
+	EndIf
+
+End
+</panel_attributes>
+    <additional_attributes/>
+  </element>
+</diagram>

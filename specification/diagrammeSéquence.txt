@@ -1,0 +1,33 @@
+@startuml
+
+
+newpage sync methode call every 5s
+==send==
+Master->Master : take the time T1
+control ISRmaster
+control ISRslave
+Master -> ISRslave : send the time via sync(T1) delay trans+alea
+==reception==
+ISRslave-> ISRslave : ISR save the time T2=T1+Dtrans+alea
+Slave->Slave : traitement+readISRé T3=T2+Dmes
+Slave->Slave : T4=T3+(T2-T1)
+
+
+
+
+newpage delayRequest call every 1min
+==send master ==
+Slave -> Slave : take the time T1
+Slave -> ISRmaster : send the time via sync(T1) delay trans+alea
+==reception master ==
+ISRmaster->ISRmaster : save the time T2=T1+delay+alea
+...later afeter a few minute or second ...
+== send slave ==
+Master -> Master : save the time T3
+Master -> ISRslave : Master send delayResponce(T2,T3) Dtrans+alea
+== reception slave ==
+ISRslave -> ISRslave :  T4=T3+Dtrans+alea
+ISRslave -> Slave : T5=Dmes+T4
+Slave-> Slave : delay=((T1-T2)+(T4-T3))/2
+Slave -> Slave : offset =((T2-T1)+(T4-T3))/2
+@enduml
